@@ -1,0 +1,58 @@
+services:
+  reverse-proxy:
+    image: traefik
+    restart: 'unless-stopped'
+    volumes:
+      - ./configs/traefik.yml:/etc/traefik/traefik.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "80:80"
+      - "8080:8080"
+
+  auth:
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+    restart: 'unless-stopped'
+    volumes:
+      - ./configs/apps/auth.yml:/config/config.yml
+      - ./apps/auth:/app/apps/auth
+    labels:
+       - service=auth
+       - traefik.enable=true
+
+  device:
+    build:
+      context: .
+      dockerfile: ./apps/device/Dockerfile
+    restart: 'unless-stopped'
+    volumes:
+      - ./configs/apps/device.yml:/config/config.yml
+      - ./apps/device:/app/apps/device
+    labels:
+      - service=device
+      - traefik.enable=true
+
+  ingest:
+    build:
+      context: .
+      dockerfile: ./apps/ingest/Dockerfile
+    restart: 'unless-stopped'
+    volumes:
+      - ./configs/apps/ingest.yml:/config/config.yml
+      - ./apps/ingest:/app/apps/ingest
+    labels:
+      - service=ingest
+      - traefik.enable=true
+
+  tracker:
+    build:
+      context: .
+      dockerfile: ./apps/tracker/Dockerfile
+    restart: 'unless-stopped'
+    volumes:
+      - ./configs/apps/tracker.yml:/config/config.yml
+      - ./apps/tracker:/app/apps/tracker
+    labels:
+      - service=tracker
+      - traefik.enable=true
