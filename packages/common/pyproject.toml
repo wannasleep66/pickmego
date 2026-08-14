@@ -4,7 +4,15 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "asyncpg>=0.31.0",
+    "dishka>=1.10.1",
+    "fastapi>=0.141.1",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.2",
+    "redis>=8.1.0",
+    "sqlalchemy>=2.0.51",
+]
 
 [project.scripts]
 common = "common:main"
