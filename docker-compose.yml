@@ -7,6 +7,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "80:80"
+      - "443:443"
       - "8080:8080"
 
   auth:
@@ -20,6 +21,29 @@ services:
     labels:
        - service=auth
        - traefik.enable=true
+       - traefik.http.services.auth.loadbalancer.server.port=8080
+       - traefik.http.routers.auth.entrypoints=websecure
+       - traefik.http.routers.auth.rule=Host(`auth.localhost`)
+       - traefik.http.routers.auth.tls=true
+    depends_on:
+      - auth-database
+      - auth-cache
+
+  auth-database:
+    image: postgres
+    volumes:
+      - auth-database-data:/var/lib/postgresql
+    restart: 'unless-stopped'
+    environment:
+      - POSTGRES_USER=${AUTH_DATABASE_USER}
+      - POSTGRES_PASSWORD=${AUTH_DATABASE_PASSWORD}
+      - POSTGRES_DB=${AUTH_DATABASE_NAME}
+
+  auth-cache:
+    image: redis
+    restart: 'unless-stopped'
+    volumes:
+      - auth-cache-data:/data
 
   device:
     build:
@@ -56,3 +80,7 @@ services:
     labels:
       - service=tracker
       - traefik.enable=true
+
+volumes:
+  auth-database-data:
+  auth-cache-data:

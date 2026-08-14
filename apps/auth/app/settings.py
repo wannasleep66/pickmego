@@ -1,26 +1,12 @@
 from typing import Literal
 
+from common.cache.settings import CacheSettings
+from common.database.settings import DatabaseSettings
+from common.settings import CONFIG_PATH, YamlSettings
 from pydantic_settings import (
     BaseSettings,
-    PydanticBaseSettingsSource,
     SettingsConfigDict,
 )
-from pydantic_settings.sources import YamlConfigSettingsSource
-
-CONFIG_PATH = "/config/config.yml"
-
-
-class YamlSettings(BaseSettings):
-    @classmethod
-    def settings_customise_sources(
-        cls,
-        settings_cls: type[BaseSettings],
-        init_settings: PydanticBaseSettingsSource,
-        env_settings: PydanticBaseSettingsSource,
-        dotenv_settings: PydanticBaseSettingsSource,
-        file_secret_settings: PydanticBaseSettingsSource,
-    ) -> tuple[PydanticBaseSettingsSource, ...]:
-        return (YamlConfigSettingsSource(settings_cls),)
 
 
 class AppSettings(YamlSettings):
@@ -32,5 +18,16 @@ class AppSettings(YamlSettings):
     model_config = SettingsConfigDict(yaml_file=CONFIG_PATH, yaml_config_section="app")
 
 
+class AuthDatabaseSettings(YamlSettings, DatabaseSettings):
+    model_config = SettingsConfigDict(yaml_file=CONFIG_PATH, yaml_config_section="database")
+
+
+class AuthCacheSettings(YamlSettings, CacheSettings):
+    model_config = SettingsConfigDict(yaml_file=CONFIG_PATH, yaml_config_section="cache")
+
+
+
 class Settings(BaseSettings):
     app: AppSettings = AppSettings()
+    database: AuthDatabaseSettings = AuthDatabaseSettings()
+    cache: AuthCacheSettings = AuthCacheSettings()

@@ -5,6 +5,12 @@ description = "Authentication service"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "common",
+    "dishka>=1.10.1",
     "loguru>=0.7.3",
     "pydantic-settings>=2.14.2",
+    "uvicorn>=0.52.2",
 ]
+
+[tool.uv.sources]
+common = { workspace = true }
