@@ -45,11 +45,18 @@ class DatabaseRepository[Model, CreateSchemaType, ReadSchemaType, UpdateSchemaTy
         return self.schema.model_validate(instance)
 
     async def update(self: Self, id_: int, data: UpdateSchemaType) -> ReadSchemaType:
-        stmt = update(self.model).filter_by(id=id_).values(**data.model_dump()).returning(self.model)
+        stmt = (
+            update(self.model)
+            .filter_by(id=id_)
+            .values(**data.model_dump())
+            .returning(self.model)
+        )
         instance = await self.session.scalar(stmt)
         return self.schema.model_validate(instance)
 
-    async def bulk_update(self: Self, **condition: Any, data: UpdateSchemaType) -> list[ReadSchemaType]:
+    async def bulk_update(
+        self: Self, data: UpdateSchemaType, **condition: Any
+    ) -> list[ReadSchemaType]:
         stmt = update(self.model).filter_by(**condition).values(**data.model_dump())
         instances = await self.session.scalars(stmt)
         return [self.schema.model_validate(instance) for instance in instances]
