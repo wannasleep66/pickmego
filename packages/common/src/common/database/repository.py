@@ -1,4 +1,4 @@
-from typing import Any, Self, TypeVar
+from typing import Any, Self
 
 from sqlalchemy import delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,15 +6,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from common.database.models import Base
 from common.database.schemas import CreateSchema, ReadSchema, UpdateSchema
 
-Model = TypeVar("Model", bound=Base)
-CreateSchemaType = TypeVar("CreateSchemaType", bound=CreateSchema)
-ReadSchemaType = TypeVar("ReadSchemaType", bound=ReadSchema)
-UpdateSchemaType = TypeVar("UpdateSchemaType", bound=UpdateSchema)
 
-
-class DatabaseRepository[Model, CreateSchemaType, ReadSchemaType, UpdateSchemaType]:
+class DatabaseRepository[
+    Model: Base,
+    CreateSchemaType: CreateSchema,
+    ReadSchemaType: ReadSchema,
+    UpdateSchemaType: UpdateSchema,
+]:
     model: type[Model]
-    schema: ReadSchemaType
+    schema: type[ReadSchemaType]
 
     def __init__(self: Self, session: AsyncSession) -> None:
         self.session = session
